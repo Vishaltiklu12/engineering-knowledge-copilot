@@ -1,0 +1,11 @@
+.env
+.pytest_cache/
+__pycache__/
+.coverage
+*.pyc
+*.pyo
+*.pyd
+data/uploads/*
+!data/uploads/.gitkeep
+venv/
+engineering_knowledge_copilot.egg-info/

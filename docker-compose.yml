@@ -1,0 +1,68 @@
+services:
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    environment:
+      VITE_API_BASE_URL: http://localhost:8000
+    volumes:
+      - ../frontend:/app
+      - frontend_node_modules:/app/node_modules
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./data/uploads:/data/uploads
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    command: celery -A app.workers.celery_app.celery_app worker --loglevel=INFO
+    env_file:
+      - .env
+    volumes:
+      - ./app:/app/app
+      - ./tests:/app/tests
+      - ./data/uploads:/data/uploads
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-knowledge_copilot}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/001-init.sql:ro
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  frontend_node_modules:
+  postgres_data:
