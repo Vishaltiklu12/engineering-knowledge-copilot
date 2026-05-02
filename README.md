@@ -2,6 +2,16 @@
 
 Backend-first reference architecture for a portfolio-grade Engineering Knowledge Copilot. The project is structured as a modular monolith with a separate worker so it stays easy to reason about locally while still demonstrating production-minded boundaries.
 
+## Showcase Assets
+
+If you are sharing this project with recruiters or technical reviewers, start here:
+
+- [Recruiter Demo Kit](./docs/demo-kit.md)
+- [Public Deployment Guide](./docs/public-deployment.md)
+- [30 to 60 Second Demo Script](./docs/demo-video-script.md)
+- [Architecture Diagram](./docs/architecture.md)
+- [Sample Questions](./docs/sample-questions.md)
+
 ## Architecture Overview
 
 ### Core components
