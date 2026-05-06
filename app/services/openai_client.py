@@ -97,7 +97,7 @@ class OpenAICompatibleClient:
                 )
 
             try:
-                payload = response.json()
+                response_payload = response.json()
             except ValueError as exc:
                 raise ExternalDependencyError(
                     f"{operation_name} returned a non-JSON response.",
@@ -108,12 +108,12 @@ class OpenAICompatibleClient:
                     },
                 ) from exc
 
-            if not isinstance(payload, dict):
+            if not isinstance(response_payload, dict):
                 raise ExternalDependencyError(
                     f"{operation_name} returned an unexpected response shape.",
-                    details={"provider": "openai", "response_type": type(payload).__name__},
+                    details={"provider": "openai", "response_type": type(response_payload).__name__},
                 )
-            return payload
+            return response_payload
 
         try:
             return self._retry_service.run(
