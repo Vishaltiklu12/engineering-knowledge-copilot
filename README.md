@@ -8,6 +8,7 @@ If you are sharing this project with recruiters or technical reviewers, start he
 
 - [Recruiter Demo Kit](./docs/demo-kit.md)
 - [Public Deployment Guide](./docs/public-deployment.md)
+- [Provider-Backed Demo Mode](./docs/provider-demo-mode.md)
 - [30 to 60 Second Demo Script](./docs/demo-video-script.md)
 - [Architecture Diagram](./docs/architecture.md)
 - [Sample Questions](./docs/sample-questions.md)
@@ -52,6 +53,34 @@ If you are sharing this project with recruiters or technical reviewers, start he
 - If retrieval quality is weak, the API rejects unsupported answers instead of fabricating them.
 - The local scaffold uses a deterministic placeholder embedder and a placeholder extractive LLM adapter so the pipeline works offline.
 - The backend now also supports an OpenAI-compatible provider path for both embeddings and grounded answer generation. In production, point `OPENAI_BASE_URL` at the provider you want to use and set `OPENAI_API_KEY`, `EMBEDDING_PROVIDER`, and `LLM_PROVIDER` accordingly.
+
+## Public Demo Mode
+
+If you want strong success-case retrieval for a public demo, do not rely on the
+default placeholder embedder. The placeholder path is intentionally useful for
+offline scaffolding, but it is not a real semantic embedding model, so broad
+natural-language questions may correctly return `unsupported` even when the
+document contains the answer.
+
+For recruiter-facing demos:
+
+1. Switch `EMBEDDING_PROVIDER` to `openai`.
+2. Switch `LLM_PROVIDER` to `openai`.
+3. Set `OPENAI_API_KEY`.
+4. Rebuild `api` and `worker`.
+5. Re-upload the demo documents into a fresh knowledge base.
+
+Why these changes were made:
+
+- placeholder mode is great for local development without external
+  dependencies
+- provider-backed mode gives real semantic retrieval and stronger grounded
+  answers for public demos
+- the confidence gate should stay strict; the better fix is better retrieval,
+  not a weaker rejection threshold
+
+See [Provider-Backed Demo Mode](./docs/provider-demo-mode.md) for the exact
+environment changes.
 
 ### Production-minded concerns
 - `pydantic-settings` for config management.
